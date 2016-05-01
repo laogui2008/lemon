@@ -4,7 +4,7 @@
 --  user schema
 -------------------------------------------------------------------------------
 CREATE TABLE USER_SCHEMA(
-        ID BIGINT auto_increment,
+        ID BIGINT NOT NULL,
 	CODE VARCHAR(50),
         NAME VARCHAR(50),
         TYPE VARCHAR(200),
@@ -20,5 +20,5 @@ CREATE TABLE USER_SCHEMA(
 	SCOPE_ID VARCHAR(50),
         CONSTRAINT PK_USER_SCHEMA PRIMARY KEY(ID),
         CONSTRAINT FK_USER_SCHEMA_REPO FOREIGN KEY(USER_REPO_ID) REFERENCES USER_REPO(ID)
-) engine=innodb;
+) ENGINE=INNODB CHARSET=UTF8;
 

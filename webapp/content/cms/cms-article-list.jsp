@@ -8,7 +8,7 @@
   <head>
     <%@include file="/common/meta.jsp"%>
     <title><spring:message code="dev.cms-article.list.title" text="列表"/></title>
-    <%@include file="/common/s.jsp"%>
+    <%@include file="/common/s3.jsp"%>
     <script type="text/javascript">
 var config = {
     id: 'cms-articleGrid',
@@ -39,70 +39,75 @@ $(function() {
   </head>
 
   <body>
-    <%@include file="/header/cms-article.jsp"%>
+    <%@include file="/header/cms.jsp"%>
 
     <div class="row-fluid">
-	  <%@include file="/menu/cms-article.jsp"%>
+	  <%@include file="/menu/cms.jsp"%>
 
 	  <!-- start of main -->
-      <section id="m-main" class="span10">
+      <section id="m-main" class="col-md-10" style="padding-top:65px;">
 
-	  <article class="m-widget">
-        <header class="header">
-		  <h4 class="title">查询</h4>
-		  <div class="ctrl">
-		    <a class="btn"><i id="cms-articleSearchIcon" class="icon-chevron-up"></i></a>
-		  </div>
-		</header>
-        <div id="cms-articleSearch" class="content content-inner">
+<div class="panel panel-default">
+  <div class="panel-heading">
+	<i class="glyphicon glyphicon-list"></i>
+    查询
+	<div class="pull-right ctrl">
+	  <a class="btn btn-default btn-xs"><i id="cms-articleSearchIcon" class="glyphicon glyphicon-chevron-up"></i></a>
+    </div>
+  </div>
+  <div class="panel-body">
 
 		  <form name="cms-articleForm" method="post" action="cms-article-list.do" class="form-inline">
 		    <label for="cms-article_name"><spring:message code='cms-article.cms-article.list.search.name' text='名称'/>:</label>
-		    <input type="text" id="cms-article_name" name="filter_LIKES_name" value="${param.filter_LIKES_name}">
-			<button class="btn btn-small a-search" onclick="document.cms-articleForm.submit()">查询</button>&nbsp;
+		    <input type="text" id="cms-article_name" name="filter_LIKES_name" value="${param.filter_LIKES_name}" class="form-control">
+			<button class="btn btn-default a-search" onclick="document.cms-articleForm.submit()">查询</button>&nbsp;
 		  </form>
 
 		</div>
-	  </article>
+	  </div>
 
-	  <article class="m-blank">
-	    <div class="pull-left">
-		  <region:region-permission permission="cms-article:create">
-		  <button class="btn btn-small a-insert" onclick="location.href='cms-article-input.do'">新建</button>
-		  </region:region-permission>
-		  <region:region-permission permission="cms-article:delete">
-		  <button class="btn btn-small a-remove" onclick="table.removeAll()">删除</button>
-		  </region:region-permission>
-		  <button class="btn btn-small a-export" onclick="table.exportExcel()">导出</button>
+      <div style="margin-bottom: 20px;">
+	    <div class="pull-left btn-group" role="group">
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-input.do'">新建</button>
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-image.do'">新建图库</button>
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-audio.do'">新建音频</button>
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-video.do'">新建视频</button>
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-pdf.do'">新建文档</button>
+		  <button class="btn btn-default a-insert" onclick="location.href='cms-article-etc.do'">新建附件</button>
+		  <button class="btn btn-default a-remove" onclick="table.removeAll()">删除</button>
+		  <button class="btn btn-default a-export" onclick="table.exportExcel()">导出</button>
 		</div>
 
 		<div class="pull-right">
 		  每页显示
-		  <select class="m-page-size">
+		  <select class="m-page-size form-control" style="display:inline;width:auto;">
 		    <option value="10">10</option>
 		    <option value="20">20</option>
 		    <option value="50">50</option>
 		  </select>
 		  条
+        </div>
+
+	    <div class="clearfix"></div>
+	  </div>
+
+<form id="cms-articleGridForm" name="cms-articleGridForm" method='post' action="cms-article-remove.do" class="m-form-blank">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+		  <i class="glyphicon glyphicon-list"></i>
+		  <spring:message code="scope-info.scope-info.list.title" text="列表"/>
 		</div>
 
-	    <div class="m-clear"></div>
-	  </article>
 
-      <article class="m-widget">
-        <header class="header">
-		  <h4 class="title"><spring:message code="cms-article.cms-article.list.title" text="列表"/></h4>
-		</header>
-        <div class="content">
-<form id="cms-articleGridForm" name="cms-articleGridForm" method='post' action="cms-article-remove.do" class="m-form-blank">
-  <table id="cms-articleGrid" class="m-table table-hover">
+  <table id="cmsArticleGrid" class="table table-hover">
     <thead>
       <tr>
-        <th width="10" class="m-table-check"><input type="checkbox" name="checkAll" onchange="toggleSelectedItems(this.checked)"></th>
-        <th class="sorting" name="id"><spring:message code="cms-article.cms-article.list.id" text="编号"/></th>
-        <th class="sorting" name="name">标题</th>
-        <th class="sorting" name="name">发布时间</th>
-        <th width="80">&nbsp;</th>
+        <th width="10" class="table-check"><input type="checkbox" name="checkAll" onchange="toggleSelectedItems(this.checked)"></th>
+        <th class="sorting" name="title">标题</th>
+        <th class="sorting" name="status">状态</th>
+        <th class="sorting" name="userId">作者</th>
+        <th class="sorting" name="createTime">创建时间</th>
+        <th width="100">&nbsp;</th>
       </tr>
     </thead>
 
@@ -110,33 +115,37 @@ $(function() {
       <c:forEach items="${page.result}" var="item">
       <tr>
         <td><input type="checkbox" class="selectedItem a-check" name="selectedItem" value="${item.id}"></td>
-        <td>${item.id}</td>
-        <td>${item.name}</td>
+        <td>${item.title}</td>
+        <td>${item.status}</td>
+        <td><tags:user userId="${item.userId}"/></td>
         <td>${item.createTime}</td>
         <td>
+          <a href="cms-article-view.do?id=${item.id}">预览</a>
+          <a href="cms-article-publish.do?id=${item.id}">发布</a>
           <a href="cms-article-input.do?id=${item.id}" class="a-update"><spring:message code="core.list.edit" text="编辑"/></a>
         </td>
       </tr>
       </c:forEach>
     </tbody>
   </table>
-</form>
-        </div>
-      </article>
 
-	  <article>
+
+      </div>
+</form>
+
+	  <div>
 	    <div class="m-page-info pull-left">
 		  共100条记录 显示1到10条记录
 		</div>
 
 		<div class="btn-group m-pagination pull-right">
-		  <button class="btn btn-small">&lt;</button>
-		  <button class="btn btn-small">1</button>
-		  <button class="btn btn-small">&gt;</button>
+		  <button class="btn btn-default">&lt;</button>
+		  <button class="btn btn-default">1</button>
+		  <button class="btn btn-default">&gt;</button>
 		</div>
 
-	    <div class="m-clear"></div>
-      </article>
+	    <div class="clearfix"></div>
+      </div>
 
       <div class="m-spacer"></div>
 
@@ -147,3 +156,4 @@ $(function() {
   </body>
 
 </html>
+
